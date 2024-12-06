@@ -4,7 +4,9 @@ import com.main.trivia.model.IncorrectAnswer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface IncorrectAnswerRepository extends JpaRepository<IncorrectAnswer, Long> {
-    // Custom query methods for incorrect answers can be added here
+    List<IncorrectAnswer> findAllByQuestionId(long questionId);
 }
