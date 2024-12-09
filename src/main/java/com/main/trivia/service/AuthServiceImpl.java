@@ -6,8 +6,6 @@ import com.main.trivia.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,14 +68,15 @@ public class AuthServiceImpl implements AuthService{
         return ResponseEntity.ok("User account deleted successfully");
     }
 
-    public ResponseEntity<?> validateLogin(String token) {
+    @Override
+    public ResponseEntity<?> getUserDetails(String token) {
         String username = jwtUtil.extractUsername(token.substring(7)); // Remove "Bearer " prefix
         User user = userRepository.findByUsername(username);
 
         if (user == null || !user.isActive()) {
             return ResponseEntity.status(401).body("User is logged out or invalid token");
         }
-        return ResponseEntity.ok("User is logged in");
+        return ResponseEntity.ok(user);
     }
 
 }

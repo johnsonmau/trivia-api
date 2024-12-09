@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/auth")
+@CrossOrigin(origins = "*", allowedHeaders = "*") // Allow requests from any origin
 public class AuthController {
 
     @Autowired
@@ -33,9 +34,9 @@ public class AuthController {
         return authService.deleteAccount(token);
     }
 
-    @GetMapping("/validate")
-    public ResponseEntity<?> validateLogin(@RequestHeader("Authorization") String token) {
-        return authService.validateLogin(token);
+    @GetMapping("/user/details")
+    public ResponseEntity<?> getUserDetails(@RequestHeader("Authorization") String token) {
+        return authService.getUserDetails(token);
     }
 
 }

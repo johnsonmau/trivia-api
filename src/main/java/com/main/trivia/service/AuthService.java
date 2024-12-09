@@ -9,5 +9,5 @@ public interface AuthService {
     ResponseEntity<?> login(User user);
     void logout(long userId);
     ResponseEntity<?> deleteAccount(String token);
-    ResponseEntity<?> validateLogin(String token);
+    ResponseEntity<?> getUserDetails(String token);
 }
