@@ -1,16 +1,17 @@
 package com.main.trivia.controller;
 
-import com.main.trivia.model.Guess;
-import com.main.trivia.model.IncorrectAnswer;
-import com.main.trivia.model.Question;
+import com.main.trivia.model.*;
+import com.main.trivia.repository.UserRepository;
 import com.main.trivia.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/v1/questions")
+@CrossOrigin(origins = "*", allowedHeaders = "*") // Allow requests from any origin
 public class QuestionController {
 
     @Autowired
@@ -32,14 +33,14 @@ public class QuestionController {
     }
 
     @GetMapping("/random")
-    public @ResponseBody Question getRandomQuestion(@RequestParam(required = false) String difficulty,
-                                                    @RequestParam(required = false) String category){
+    public @ResponseBody ResponseEntity<Question> getRandomQuestion(@RequestParam(required = false) String difficulty,
+                                                                    @RequestParam(required = false) String category){
         return questionService.getRandomQuestion(difficulty, category);
     }
 
     @PostMapping("/solve")
-    public String solveQuestion(@RequestBody Guess guess){
-        return questionService.solveQuestion(guess);
+    public ResponseEntity<?> solveQuestion(@RequestBody Guess guess,
+                                                           @RequestHeader("Authorization") String token){
+        return questionService.solveQuestion(guess, token);
     }
-
 }

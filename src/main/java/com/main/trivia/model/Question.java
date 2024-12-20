@@ -32,11 +32,14 @@ public class Question {
     private String question;
 
     @Column(nullable = false, columnDefinition = "TEXT")
+    @JsonIgnore
     private String correctAnswer;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<IncorrectAnswer> incorrectAnswers;
+
+    private List<String> allAnswers;
 
     public Long getId() {
         return id;
@@ -92,6 +95,14 @@ public class Question {
 
     public void setIncorrectAnswers(List<IncorrectAnswer> incorrectAnswers) {
         this.incorrectAnswers = incorrectAnswers;
+    }
+
+    public List<String> getAllAnswers() {
+        return allAnswers;
+    }
+
+    public void setAllAnswers(List<String> allAnswers) {
+        this.allAnswers = allAnswers;
     }
 
     // Enums for Question Type and Difficulty

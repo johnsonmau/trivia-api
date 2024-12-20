@@ -25,8 +25,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout/{userId}")
-    public void logout(@PathVariable long userId) {
-        authService.logout(userId);
+    public void logout(@RequestHeader("Authorization") String token) {
+        authService.logout(token);
     }
 
     @DeleteMapping("/delete")

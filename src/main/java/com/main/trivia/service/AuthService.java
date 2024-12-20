@@ -7,7 +7,7 @@ public interface AuthService {
 
     ResponseEntity<?> register(User user);
     ResponseEntity<?> login(User user);
-    void logout(long userId);
+    void logout(String token);
     ResponseEntity<?> deleteAccount(String token);
     ResponseEntity<?> getUserDetails(String token);
 }

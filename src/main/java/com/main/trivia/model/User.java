@@ -1,5 +1,6 @@
 package com.main.trivia.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -23,21 +25,27 @@ public class User {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<String> roles = new HashSet<>();
 
     @Column(nullable = false)
+    @JsonIgnore
     private boolean active = true; // Represents login/logout state
 
     @Column(nullable = false)
+    @JsonIgnore
     private int gamesPlayed = 0;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("date DESC")
     private List<Score> scores = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
+    @JsonIgnore
     private LocalDateTime dateCreated = LocalDateTime.now();
 
     @Column(nullable = false)
+    @JsonIgnore
     private LocalDateTime lastActive = LocalDateTime.now();
 
     public User() {
@@ -141,6 +149,21 @@ public class User {
     public void login() {
         this.active = true;
         updateLastActive();
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                ", active=" + active +
+                ", gamesPlayed=" + gamesPlayed +
+                ", scores=" + scores +
+                ", dateCreated=" + dateCreated +
+                ", lastActive=" + lastActive +
+                '}';
     }
 }
 
