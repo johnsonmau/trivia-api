@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.main</groupId>
 	<artifactId>trivia</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>trivia</name>
 	<description>Trivia Application</description>
 	<url/>
