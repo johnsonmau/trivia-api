@@ -1,6 +1,7 @@
 package com.main.trivia.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.main.trivia.util.CustomDateSerializer;
 import jakarta.persistence.*;
@@ -58,5 +59,10 @@ public class Score {
 
     public void setDate(ZonedDateTime date) {
         this.date = date;
+    }
+
+    @JsonProperty("user_id")
+    public long getUserId() {
+        return user != null ? user.getId() : null;
     }
 }

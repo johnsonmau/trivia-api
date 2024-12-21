@@ -17,25 +17,26 @@ public class QuestionController {
     @Autowired
     private QuestionService questionService;
 
-    @GetMapping
+    //@GetMapping
     public @ResponseBody List<Question> getAllQuestions(){
         return questionService.getAllQuestions();
     }
 
-    @GetMapping("/{id}")
+    //@GetMapping("/{id}")
     public @ResponseBody Question getQuestionById(@PathVariable long id){
         return questionService.getQuestionById(id);
     }
 
-    @GetMapping("/incorrect/{questionId}")
+    //@GetMapping("/incorrect/{questionId}")
     public @ResponseBody List<IncorrectAnswer> getIncorrectAnswersByQId(@PathVariable long questionId){
         return questionService.getIncorrectAnswersByQId(questionId);
     }
 
     @GetMapping("/random")
-    public @ResponseBody ResponseEntity<Question> getRandomQuestion(@RequestParam(required = false) String difficulty,
-                                                                    @RequestParam(required = false) String category){
-        return questionService.getRandomQuestion(difficulty, category);
+    public @ResponseBody ResponseEntity<?> getRandomQuestion(@RequestParam(required = false) String difficulty,
+                                                                    @RequestParam(required = false) String category,
+                                                                    @RequestHeader("Authorization") String token){
+        return questionService.getRandomQuestion(difficulty, category, token);
     }
 
     @PostMapping("/solve")

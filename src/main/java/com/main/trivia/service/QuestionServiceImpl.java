@@ -1,6 +1,7 @@
 package com.main.trivia.service;
 
 import com.main.trivia.model.*;
+import com.main.trivia.model.Error;
 import com.main.trivia.repository.IncorrectAnswerRepository;
 import com.main.trivia.repository.QuestionRepository;
 import com.main.trivia.repository.UserRepository;
@@ -29,8 +30,6 @@ public class QuestionServiceImpl implements QuestionService{
     @Autowired
     private UserRepository userRepository;
 
-    private String solveQRes;
-
     @Override
     public List<Question> getAllQuestions() {
         return questionRepository.findAll();
@@ -47,7 +46,24 @@ public class QuestionServiceImpl implements QuestionService{
     }
 
     @Override
-    public ResponseEntity<Question> getRandomQuestion(String difficulty, String category){
+    public ResponseEntity<?> getRandomQuestion(String difficulty, String category, String token){
+
+        if (token == null || token.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(new Error("unauthorized"));
+        }
+
+        String username = null;
+
+        try {
+            username = jwtUtil.extractUsername(token.substring(7)); // Remove "Bearer " prefix
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new Error("cant parse auth token"));
+        }
+
+        User existingUser = userRepository.findByUsername(username);
+        if (existingUser == null) {
+            return ResponseEntity.badRequest().body(new Error("user doesn't exist"));
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("charset", "utf-8");
@@ -82,8 +98,7 @@ public class QuestionServiceImpl implements QuestionService{
     public ResponseEntity<?> solveQuestion(Guess guess, String token) {
 
         if (token == null || token.trim().isEmpty()) {
-            solveQRes = "{\"error\": \"unauthorized\"}.\"}";
-            return ResponseEntity.badRequest().body(solveQRes);
+            return ResponseEntity.badRequest().body(new Error("unauthorized"));
         }
 
         String username = null;
@@ -91,14 +106,12 @@ public class QuestionServiceImpl implements QuestionService{
         try {
             username = jwtUtil.extractUsername(token.substring(7)); // Remove "Bearer " prefix
         } catch (Exception ex) {
-            solveQRes = "{\"error\": \"unauthorized\"}.\"}";
-            return ResponseEntity.badRequest().body(solveQRes);
+            return ResponseEntity.badRequest().body(new Error("unauthorized"));
         }
 
         User existingUser = userRepository.findByUsername(username);
         if (existingUser == null) {
-            solveQRes = "{\"error\": \"unauthorized\"}.\"}";
-            return ResponseEntity.badRequest().body(solveQRes);
+            return ResponseEntity.badRequest().body(new Error("unauthorized"));
         }
 
         long questionId = guess.getQuestionId();

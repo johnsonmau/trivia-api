@@ -1,6 +1,7 @@
 package com.main.trivia.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -22,7 +23,12 @@ public class User {
     private String username;
 
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // This makes it writable but not readable
     private String password;
+
+    @Column(nullable = false)
+    @JsonProperty("country")
+    private String countryCd;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @JsonIgnore
@@ -82,6 +88,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCountryCd() {
+        return countryCd;
+    }
+
+    public void setCountryCd(String countryCd) {
+        this.countryCd = countryCd;
     }
 
     public boolean isActive() {
@@ -157,6 +171,7 @@ public class User {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", countryCd='" + countryCd + '\'' +
                 ", roles=" + roles +
                 ", active=" + active +
                 ", gamesPlayed=" + gamesPlayed +

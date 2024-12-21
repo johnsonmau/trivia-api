@@ -1,7 +1,9 @@
 package com.main.trivia.controller;
 
+import com.main.trivia.annotation.RateLimit;
 import com.main.trivia.model.User;
 import com.main.trivia.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +17,14 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
+    @RateLimit
     public ResponseEntity<?> register(@RequestBody User user) {
         return authService.register(user);
     }
 
     @PostMapping("/login")
-    public @ResponseBody ResponseEntity<?> login(@RequestBody User user) {
+    @RateLimit
+    public @ResponseBody ResponseEntity<?> login(@RequestBody User user, HttpServletRequest request) {
         return authService.login(user);
     }
 

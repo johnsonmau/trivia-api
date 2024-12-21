@@ -1,5 +1,6 @@
 package com.main.trivia.service;
 
+import com.main.trivia.model.Error;
 import com.main.trivia.model.User;
 import com.main.trivia.repository.UserRepository;
 import com.main.trivia.util.JwtUtil;
@@ -26,7 +27,6 @@ public class AuthServiceImpl implements AuthService{
 
     private String registerValidationRes;
     private String loginValidationRes;
-    private String deleteValidationRes;
 
     @Override
     public ResponseEntity<?> register(User user) {
@@ -42,44 +42,57 @@ public class AuthServiceImpl implements AuthService{
             return ResponseEntity.ok("User registered successfully");
         }
 
-        return ResponseEntity.badRequest().body(registerValidationRes);
+        return ResponseEntity.badRequest().body(new Error(registerValidationRes));
     }
 
     private boolean validUser(User user) {
-        System.out.println(user);
         if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-            registerValidationRes = "{\"error\": \"Username is required\"}";
+            registerValidationRes = "Username is required";
             return false;
         }
 
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
-            registerValidationRes = "{\"error\": \"password is required\"}";
+            registerValidationRes = "password is required";
+            return false;
+        }
+
+        if (user.getCountryCd() == null || user.getCountryCd().trim().isEmpty()) {
+            registerValidationRes = "country cd is required";
             return false;
         }
 
         if (user.getUsername().length() < 5) {
-            registerValidationRes = "{\"error\": \"Username must be at least 5 characters\"}";
+            registerValidationRes = "Username must be at least 5 characters";
+            return false;
+        }
+
+        if (user.getCountryCd().length() > 2) {
+            registerValidationRes = "Country code cant be greater than 2 characters";
+            return false;
+        }
+
+        if (user.getUsername().length() > 10) {
+            registerValidationRes = "Username cant be greater than 10 characters";
             return false;
         }
 
         if (user.getPassword().length() < 6) {
-            registerValidationRes = "{\"error\": \"Password must be at least 6 characters\"}";
+            registerValidationRes = "Password must be at least 6 characters";
             return false;
         }
 
         if (user.getUsername().contains(" ")) {
-            registerValidationRes = "{\"error\": \"Username cannot contain spaces\"}";
+            registerValidationRes = "Username cannot contain spaces";
             return false;
         }
 
         if (user.getPassword().contains(" ")) {
-            registerValidationRes = "{\"error\": \"Password cannot contain spaces\"}";
+            registerValidationRes = "Password cannot contain spaces";
             return false;
         }
 
         if (userRepository.findByUsername(user.getUsername()) != null) {
-            System.out.println("user exists");
-            registerValidationRes = "{\"error\": \"User with that name already exists\"}";
+            registerValidationRes = "User with that name already exists";
             return false;
         }
 
@@ -90,24 +103,27 @@ public class AuthServiceImpl implements AuthService{
     public ResponseEntity<?> login(User user) {
 
         if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-            loginValidationRes = "{\"error\": \"Username is required\"}.\"}";
-            return ResponseEntity.badRequest().body(loginValidationRes);
+            loginValidationRes = "{\"error\": \"Username is required\"}";
+            return ResponseEntity.badRequest().body(new Error(loginValidationRes));
 
         }
 
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
-            loginValidationRes = "{\"error\": \"Username is required\"}.\"}";
-            return ResponseEntity.badRequest().body(loginValidationRes);
+            loginValidationRes = "{\"error\": \"Username is required\"}";
+            return ResponseEntity.badRequest().body(new Error(loginValidationRes));
         }
 
         // Authenticate user
         User existingUser = userRepository.findByUsername(user.getUsername());
         if (existingUser == null || !passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
-            return ResponseEntity.status(401).body("Invalid username or password");
+            return ResponseEntity.status(401).body(new Error("Invalid username or password"));
         }
 
         // Generate JWT token
         String token = jwtUtil.generateToken(existingUser.getUsername());
+
+        existingUser.updateLastActive();
+        userRepository.save(existingUser);
 
         // Return the token in the response
         return ResponseEntity.ok(Map.of("token", token));
@@ -126,8 +142,7 @@ public class AuthServiceImpl implements AuthService{
     public ResponseEntity<?> deleteAccount(String token) {
 
         if (token == null || token.trim().isEmpty()) {
-            deleteValidationRes = "{\"error\": \"unauthorized\"}.\"}";
-            return ResponseEntity.badRequest().body(deleteValidationRes);
+            return ResponseEntity.badRequest().body(new Error("unauthorized"));
         }
 
         String username = null;
@@ -135,14 +150,12 @@ public class AuthServiceImpl implements AuthService{
         try {
             username = jwtUtil.extractUsername(token.substring(7)); // Remove "Bearer " prefix
         } catch (Exception ex) {
-            deleteValidationRes = "{\"error\": \"cant parse auth token\"}.\"}";
-            return ResponseEntity.badRequest().body(deleteValidationRes);
+            return ResponseEntity.badRequest().body(new Error("cant parse auth token"));
         }
 
         User existingUser = userRepository.findByUsername(username);
         if (existingUser == null) {
-            deleteValidationRes = "{\"error\": \"user doesn't exist\"}.\"}";
-            return ResponseEntity.badRequest().body(deleteValidationRes);
+            return ResponseEntity.badRequest().body(new Error("user doesn't exist"));
         }
 
         userRepository.deleteByUsername(username);
@@ -159,12 +172,11 @@ public class AuthServiceImpl implements AuthService{
             String username = jwtUtil.extractUsername(token.substring(7)); // Remove "Bearer " prefix
             user = userRepository.findByUsername(username);
         } catch (ExpiredJwtException ex){
-            System.out.println("Token is expired");
-            return ResponseEntity.status(401).body("Invalid token");
+            return ResponseEntity.status(401).body(new Error("invalid token"));
         }
 
         if (user == null || !user.isActive()) {
-            return ResponseEntity.status(401).body("User is logged out or invalid token");
+            return ResponseEntity.status(401).body(new Error("user is logged out or invalid token"));
         }
 
         return ResponseEntity.ok(user);
