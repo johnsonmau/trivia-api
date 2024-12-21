@@ -5,7 +5,7 @@ FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 
 # Copy the Spring Boot JAR file to the container
-COPY target/trivia.jar app.jar
+COPY target/trivia-1.0.jar app.jar
 
 # Expose the port your application runs on
 EXPOSE 8080
