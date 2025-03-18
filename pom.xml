@@ -12,6 +12,7 @@
 	<artifactId>trivia</artifactId>
 	<version>1.0</version>
 	<name>trivia</name>
+	<packaging>war</packaging>
 	<description>Trivia Application</description>
 	<url/>
 	<licenses>
