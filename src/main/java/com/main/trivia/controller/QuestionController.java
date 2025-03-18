@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/questions")
-@CrossOrigin(origins = "*", allowedHeaders = "*") // Allow requests from any origin
+@CrossOrigin(origins = "${cors.allowed-origins}", allowedHeaders = "*")  // Read from application.properties
 public class QuestionController {
 
     @Autowired

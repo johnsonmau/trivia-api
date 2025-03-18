@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/auth")
-@CrossOrigin(origins = "*", allowedHeaders = "*") // Allow requests from any origin
+@CrossOrigin(origins = "${cors.allowed-origins}", allowedHeaders = "*")  // Read from application.properties
 public class AuthController {
 
     @Autowired

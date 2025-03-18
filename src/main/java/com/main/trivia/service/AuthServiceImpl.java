@@ -61,11 +61,6 @@ public class AuthServiceImpl implements AuthService{
             return false;
         }
 
-        if (user.getUsername().length() < 5) {
-            registerValidationRes = "Username must be at least 5 characters";
-            return false;
-        }
-
         if (user.getCountryCd().length() > 2) {
             registerValidationRes = "Country code cant be greater than 2 characters";
             return false;
