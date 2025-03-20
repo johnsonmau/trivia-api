@@ -8,7 +8,7 @@ WORKDIR /usr/local/tomcat/webapps/
 COPY target/trivia-api.war trivia-api.war
 
 # Expose the correct port
-EXPOSE 8080
+EXPOSE 8088
 
 # Start Tomcat
 CMD ["catalina.sh", "run"]
