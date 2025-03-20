@@ -1,14 +1,14 @@
 # Use official Tomcat base image
-FROM tomcat:9.0
+FROM tomcat:10
 
 # Set working directory to Tomcat webapps
 WORKDIR /usr/local/tomcat/webapps/
 
-# Copy the built WAR file into the Tomcat webapps directory
-COPY target/trivia-api.war ./ROOT.war
+# Copy the built WAR file into the Tomcat webapps directory (don't rename unless needed)
+COPY target/trivia-api.war trivia-api.war
 
-# Expose port 8084
-EXPOSE 8088
+# Expose the correct port
+EXPOSE 8080
 
 # Start Tomcat
 CMD ["catalina.sh", "run"]
