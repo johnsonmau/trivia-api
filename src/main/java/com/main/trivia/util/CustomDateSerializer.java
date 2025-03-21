@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -24,16 +25,17 @@ public class CustomDateSerializer extends StdSerializer<ZonedDateTime> {
 
     @Override
     public void serialize(ZonedDateTime value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        // Format with EST or other abbreviation explicitly
-        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.ENGLISH);
-        formatter.setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
+        // Format with the correct timezone and abbreviation explicitly
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a", Locale.ENGLISH)
+                .withZone(ZoneId.systemDefault());  // Set the timezone for the formatter
 
-        String daySuffix = getDayOfMonthSuffix(value.getDayOfMonth());
-        Date date = Date.from(value.toInstant());
+        // Format the ZonedDateTime into a string
+        String formattedDate = value.format(formatter);
 
-        String formattedDate = String.format(formatter.format(date), daySuffix);
+        // Write the formatted date to the output
         gen.writeString(formattedDate);
     }
+
 
     private String getDayOfMonthSuffix(int day) {
         if (day >= 11 && day <= 13) {
