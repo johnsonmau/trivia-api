@@ -25,14 +25,11 @@ public class CustomDateSerializer extends StdSerializer<ZonedDateTime> {
 
     @Override
     public void serialize(ZonedDateTime value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        // Format with the correct timezone and abbreviation explicitly
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a", Locale.ENGLISH)
-                .withZone(ZoneId.systemDefault());  // Set the timezone for the formatter
+        DateTimeFormatter formatter = DateTimeFormatter
+                .ofPattern("MM/dd/yyyy hh:mm a", Locale.ENGLISH)
+                .withZone(ZoneId.systemDefault());
 
-        // Format the ZonedDateTime into a string
         String formattedDate = value.format(formatter);
-
-        // Write the formatted date to the output
         gen.writeString(formattedDate);
     }
 
