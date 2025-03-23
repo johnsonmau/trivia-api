@@ -12,11 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class ScoreServiceImpl  implements ScoreService{
+
+    private static final Logger LOGGER = Logger.getLogger(ScoreServiceImpl.class.getName());
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -29,16 +32,17 @@ public class ScoreServiceImpl  implements ScoreService{
 
     @Override
     public ResponseEntity<?> saveScore(String token, Score score) {
-
         try {
-
             String username = jwtUtil.extractUsername(token.substring(7));
+            LOGGER.log(Level.INFO, "Extracted username from token: {0}", username);
+
             User user = userRepository.findByUsername(username);
+            LOGGER.log(Level.INFO, "User found: {0}", user.getUsername());
 
             Score scoreToSave = score;
             scoreToSave.setUser(user);
-
             scoreToSave = scoreRepository.save(scoreToSave);
+            LOGGER.log(Level.INFO, "Score saved: {0}", scoreToSave.getScore());
 
             List<Score> existingScores = user.getScores();
             existingScores.add(scoreToSave);
@@ -46,10 +50,11 @@ public class ScoreServiceImpl  implements ScoreService{
             user.setScores(existingScores);
             user.updateLastActive();
             user.setGamesPlayed(user.getGamesPlayed() + 1);
+            LOGGER.log(Level.INFO, "Updated user stats: gamesPlayed={0}", user.getGamesPlayed());
 
             userRepository.save(user);
-
-        } catch (Exception ex){
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error saving score", ex);
             return ResponseEntity.status(500).body(new Error(ex.getMessage()));
         }
 
@@ -58,6 +63,7 @@ public class ScoreServiceImpl  implements ScoreService{
 
     @Override
     public ResponseEntity<?> getTop25Scores() {
+        LOGGER.log(Level.INFO, "Fetching top 25 scores");
         List<Score> top25Scores = scoreRepository.findTop25();
         List<Leader> top25Leaders = new ArrayList<>();
 
@@ -65,9 +71,15 @@ public class ScoreServiceImpl  implements ScoreService{
             Leader leader = new Leader();
             leader.setScore(score.getScore());
             leader.setDate(score.getDate());
-            User user = userRepository.findById(score.getUserId()).get();
-            leader.setCountryCd(user.getCountryCd());
-            leader.setUsername(user.getUsername());
+            User user = userRepository.findById(score.getUserId()).orElse(null);
+
+            if (user != null) {
+                leader.setCountryCd(user.getCountryCd());
+                leader.setUsername(user.getUsername());
+            } else {
+                LOGGER.log(Level.WARNING, "User not found for score ID: {0}", score.getUserId());
+            }
+
             top25Leaders.add(leader);
         }
 
