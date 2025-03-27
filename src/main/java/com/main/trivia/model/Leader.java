@@ -10,6 +10,8 @@ public class Leader {
     private String username;
     private int score;
     private String countryCd;
+    private String difficulty;
+    private String category;
 
     @JsonSerialize(using = CustomDateSerializer.class)
     private ZonedDateTime date;
@@ -44,5 +46,21 @@ public class Leader {
 
     public void setCountryCd(String countryCd) {
         this.countryCd = countryCd;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

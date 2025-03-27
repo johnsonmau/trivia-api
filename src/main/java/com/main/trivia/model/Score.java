@@ -20,6 +20,12 @@ public class Score {
     @Column(nullable = false)
     private int score;
 
+    @Column
+    private String difficulty;
+
+    @Column
+    private String category;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
@@ -59,6 +65,22 @@ public class Score {
 
     public void setDate(ZonedDateTime date) {
         this.date = date;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     @JsonProperty("user_id")

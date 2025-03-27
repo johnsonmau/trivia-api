@@ -29,7 +29,8 @@ public class ScoreController {
     }
 
     @GetMapping("/leaders/25")
-    public @ResponseBody ResponseEntity<?> getTop25() {
-        return scoreService.getTop25Scores();
+    public @ResponseBody ResponseEntity<?> getTop25(@RequestParam(required = false) String difficulty,
+                                                    @RequestParam(required = false) String category) {
+        return scoreService.getTop25Scores(difficulty, category);
     }
 }

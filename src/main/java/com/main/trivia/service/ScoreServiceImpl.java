@@ -62,15 +62,30 @@ public class ScoreServiceImpl  implements ScoreService{
     }
 
     @Override
-    public ResponseEntity<?> getTop25Scores() {
-        LOGGER.log(Level.INFO, "Fetching top 25 scores");
-        List<Score> top25Scores = scoreRepository.findTop25();
+    public ResponseEntity<?> getTop25Scores(String difficulty, String category) {
+        LOGGER.log(Level.INFO, "Fetching top 25 scores. category="+category+" difficulty="+difficulty);
+
+        if (difficulty != null) {
+            if (difficulty.equalsIgnoreCase("All Difficulties")){
+                difficulty = null;
+            }
+        }
+
+        if (category != null) {
+            if (category.equalsIgnoreCase("All Categories")){
+                category = null;
+            }
+        }
+
+        List<Score> top25Scores = scoreRepository.findTop25(difficulty, category);
         List<Leader> top25Leaders = new ArrayList<>();
 
         for (Score score : top25Scores) {
             Leader leader = new Leader();
             leader.setScore(score.getScore());
             leader.setDate(score.getDate());
+            leader.setCategory(score.getCategory());
+            leader.setDifficulty(score.getDifficulty());
             User user = userRepository.findById(score.getUserId()).orElse(null);
 
             if (user != null) {

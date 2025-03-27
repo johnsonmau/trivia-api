@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +22,36 @@ import java.util.List;
 public class QuestionServiceImpl implements QuestionService {
 
     private static final Logger logger = LoggerFactory.getLogger(QuestionServiceImpl.class);
+
+    private final String[] categories = {
+            "Mixed",
+            "General Knowledge",
+            "Entertainment: Books",
+            "Entertainment: Board Games",
+            "Entertainment: Cartoons",
+            "Entertainment: Comics",
+            "Entertainment: Film",
+            "Entertainment: Japanese Anime",
+            "Entertainment: Music",
+            "Entertainment: Musicals & Theatres",
+            "Entertainment: Television",
+            "Entertainment: Video Games",
+            "Geography",
+            "History",
+            "Mythology",
+            "Politics",
+            "Science & Nature",
+            "Science: Computers",
+            "Science: Gadgets",
+            "Science: Mathematics",
+            "Sports",
+            "Vehicles",
+            "Art",
+            "Animals",
+            "Celebrities"
+    };
+
+    private final String[] difficulties = {"Mixed", "Easy", "Medium", "Hard"};
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -72,6 +103,22 @@ public class QuestionServiceImpl implements QuestionService {
         if (existingUser == null) {
             logger.error("User with username {} does not exist", username);
             return ResponseEntity.badRequest().body(new Error("user doesn't exist"));
+        }
+
+        if (difficulty != null) {
+            if (Arrays.asList(difficulties).contains(difficulty) == false || difficulty.equalsIgnoreCase("mixed")){
+                difficulty = null;
+            }
+        }
+
+        if (category != null) {
+            if (Arrays.asList(categories).contains(category) == false || category.equalsIgnoreCase("mixed")){
+                category = null;
+            } else {
+                if (category.equalsIgnoreCase("Entertainment: Japanese Anime")){
+                    category = "Entertainment: Japanese Anime &amp; Manga";
+                }
+            }
         }
 
         HttpHeaders headers = new HttpHeaders();

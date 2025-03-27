@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ScoreService {
     ResponseEntity<?> saveScore(String token, Score score);
-    ResponseEntity<?> getTop25Scores();
+    ResponseEntity<?> getTop25Scores(String difficulty, String category);
 }
